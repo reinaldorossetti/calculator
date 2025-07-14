@@ -76,7 +76,9 @@ class CalculatorViewModel : ViewModel() {
             _mutableEntryState.value.toFloat(),
             _mutableButtonState.value
         )
-        _mutableMemoryState.value = total
+        if (total is Float) {
+            _mutableMemoryState.value = total
+        }
         _mutableEntryState.value = total.toString()
         _mutableEraserState.value = true
         _mutableButtonState.value = Operation.NONE
@@ -94,7 +96,9 @@ class CalculatorViewModel : ViewModel() {
                     entry = _mutableEntryState.value.toFloat(),
                     _mutableButtonState.value
                 )
-                _mutableMemoryState.value = total
+                if (total is Float) {
+                    _mutableMemoryState.value = total
+                }
                 _mutableEntryState.value = total.toString()
             }
             _mutableButtonState.value = button
@@ -108,7 +112,7 @@ class CalculatorViewModel : ViewModel() {
         actual: Float,
         entry: Float,
         currentOperation: Operation
-    ): Float {
+    ): Any {
         val calculation = when (currentOperation) {
             Operation.DIVISION -> Calculator.Division(actual, entry)()
             Operation.MULTIPLICATION -> Calculator.Multiplication(actual, entry)()
