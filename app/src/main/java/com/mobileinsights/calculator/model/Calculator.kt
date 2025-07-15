@@ -1,9 +1,6 @@
 package com.mobileinsights.calculator.model
 
-sealed class Calculator(
-    private val actual: Float,
-    private val number: Float
-) {
+sealed class Calculator(private val actual: Float, private val number: Float) {
     protected abstract fun performCalculation(actual: Float, currentNumber: Float): Any
 
     operator fun invoke(): Any {
