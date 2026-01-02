@@ -34,4 +34,13 @@ sealed class Calculator(private val actual: Float, private val number: Float) {
             throw IllegalArgumentException("Division by zero is not allowed.")
         }
     }
+
+    class Modulo(actual: Float, modulo: Float) : Calculator(actual, modulo) {
+        override fun performCalculation(actual: Float, currentNumber: Float): Any {
+            if (currentNumber != 0f) {
+                return actual % currentNumber
+            }
+            throw IllegalArgumentException("Modulo by zero is not allowed.")
+        }
+    }
 }

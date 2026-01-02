@@ -48,6 +48,7 @@ Para rodar o projeto:
 ```sh
 ./gradlew assembleDebug
 ./gradlew installDebug
+./gradlew clean test --stacktrace
 ```
 
 ## Estrutura do Projeto 🗂️

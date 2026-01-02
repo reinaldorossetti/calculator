@@ -1,12 +1,10 @@
 package com.mobileinsights.calculator.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.mobileinsights.calculator.model.Calculator
 import com.mobileinsights.calculator.model.Operation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 class CalculatorViewModel : ViewModel() {
     private val _mutableEraserState = MutableStateFlow(false)
@@ -18,59 +16,86 @@ class CalculatorViewModel : ViewModel() {
     val entryState= _mutableEntryState.asStateFlow()
 
     fun onEvent(calculatorEvent: CalculatorEvent) {
-        viewModelScope.launch {
-            when(calculatorEvent) {
-                CalculatorEvent.AllClear -> allClear()
-                CalculatorEvent.Equals -> equals()
-                is CalculatorEvent.Calculation -> {
-                    when (calculatorEvent.operation) {
-                        Operation.NONE -> TODO()
-                        Operation.AC -> allClear()
-                        Operation.PLUS_MINUS -> TODO()
-                        Operation.COMMA -> TODO()
-                        Operation.PERCENTAGE -> percentage()
-                        Operation.EQUALS -> equals()
-                        else -> selectOperator(calculatorEvent.operation)
-                    }
+        when (calculatorEvent) {
+            CalculatorEvent.AllClear -> allClear()
+            CalculatorEvent.Equals -> equals()
+            is CalculatorEvent.Calculation -> handleOperation(calculatorEvent.operation)
+            is CalculatorEvent.Number -> enterNumber(calculatorEvent.value)
+        }
+    }
 
-                }
-                is CalculatorEvent.Number -> {
-                    enterNumber(calculatorEvent.value)
-                }
-            }
+    private fun handleOperation(operation: Operation) {
+        when (operation) {
+            Operation.NONE -> Unit
+            Operation.AC -> allClear()
+            Operation.PLUS_MINUS -> toggleSign()
+            Operation.COMMA -> insertDecimalPoint()
+            Operation.PERCENTAGE -> percentage()
+            Operation.EQUALS -> equals()
+            else -> selectOperator(operation)
         }
     }
 
     private fun enterNumber(entry: Int) {
-        viewModelScope.launch {
-            if (_mutableEntryState.value.length < 12) {
-                if (_mutableEraserState.value) {
-                    _mutableEntryState.value = "0"
-                    _mutableEraserState.value = false
-                }
-                val valueBuilder = StringBuilder()
-                if (_mutableEntryState.value != "0") {
-                    valueBuilder
-                        .append(_mutableEntryState.value)
-                }
-                valueBuilder.append(entry)
-                _mutableEntryState.value = valueBuilder.toString()
-            }
+        if (_mutableEntryState.value.length >= 12) {
+            return
+        }
+        if (_mutableEraserState.value) {
+            _mutableEntryState.value = "0"
+            _mutableEraserState.value = false
+        }
+        val valueBuilder = StringBuilder()
+        if (_mutableEntryState.value != "0") {
+            valueBuilder.append(_mutableEntryState.value)
+        }
+        valueBuilder.append(entry)
+        _mutableEntryState.value = valueBuilder.toString()
+    }
+
+    private fun insertDecimalPoint() {
+        if (_mutableEntryState.value.contains(".")) {
+            return
+        }
+        if (_mutableEntryState.value.length >= 12) {
+            return
+        }
+        if (_mutableEraserState.value) {
+            _mutableEntryState.value = "0"
+            _mutableEraserState.value = false
+        }
+        _mutableEntryState.value = _mutableEntryState.value + "."
+    }
+
+    private fun toggleSign() {
+        val current = _mutableEntryState.value
+        if (current == "0") {
+            return
+        }
+        _mutableEntryState.value = if (current.startsWith("-")) {
+            current.removePrefix("-")
+        } else {
+            "-$current"
         }
     }
 
     private fun allClear() {
         _mutableEntryState.value = "0"
         _mutableMemoryState.value = null
+        _mutableButtonState.value = Operation.NONE
+        _mutableEraserState.value = false
     }
 
     private fun percentage() {
-        if (_mutableEraserState.value.not()) {
-            _mutableEntryState.value = (entryState.value.toFloat() / 100).toString()
-        }
+        val currentValue = _mutableEntryState.value.toFloatOrNull() ?: return
+        _mutableEntryState.value = (currentValue / 100f).toString()
     }
 
     private fun equals() {
+        if (_mutableButtonState.value == Operation.NONE) {
+            _mutableMemoryState.value = _mutableEntryState.value.toFloat()
+            _mutableEraserState.value = true
+            return
+        }
         val total = calculation(
             _mutableMemoryState.value ?: 0f,
             _mutableEntryState.value.toFloat(),
@@ -78,8 +103,8 @@ class CalculatorViewModel : ViewModel() {
         )
         if (total is Float) {
             _mutableMemoryState.value = total
+            _mutableEntryState.value = total.toString()
         }
-        _mutableEntryState.value = total.toString()
         _mutableEraserState.value = true
         _mutableButtonState.value = Operation.NONE
     }
@@ -113,18 +138,14 @@ class CalculatorViewModel : ViewModel() {
         entry: Float,
         currentOperation: Operation
     ): Any {
-        val calculation = when (currentOperation) {
+        return when (currentOperation) {
             Operation.DIVISION -> Calculator.Division(actual, entry)()
             Operation.MULTIPLICATION -> Calculator.Multiplication(actual, entry)()
             Operation.SUBTRACTION -> Calculator.Subtraction(actual, entry)()
             Operation.ADDITION -> Calculator.Addition(actual, entry)()
-            Operation.PERCENTAGE -> {
-                percentage()
-                0f
-            }
-            else -> 0f
+            Operation.PERCENTAGE -> entry / 100f
+            else -> entry
         }
-        return calculation
     }
 }
 
