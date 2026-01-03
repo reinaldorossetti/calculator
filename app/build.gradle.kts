@@ -3,6 +3,7 @@ plugins {
     id("de.mannodermaus.android-junit5")
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("io.qameta.allure")
 }
 
 android {
@@ -76,6 +77,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("io.qameta.allure:allure-junit5:2.24.0")
+}
+
+allure {
+    version.set("2.24.0")
 }
 
 // Garante que a task `test` use a plataforma do JUnit 5

@@ -36,7 +36,7 @@ fun CalculatorComponent(viewModel: CalculatorViewModel) {
                     .padding(4.dp),
                 buttonState = operatorState.value,
                 onNumberChange = { entry: Int ->
-                    viewModel.onEvent(CalculatorEvent.Number(entry))
+                    viewModel.onEvent(CalculatorEvent.Number(entry.toLong()))
                 }, onOperatorClick = { operation ->
                     viewModel.onEvent(CalculatorEvent.Calculation(operation))
                 }

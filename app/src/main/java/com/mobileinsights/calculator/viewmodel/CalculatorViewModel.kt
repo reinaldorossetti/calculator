@@ -36,7 +36,7 @@ class CalculatorViewModel : ViewModel() {
         }
     }
 
-    private fun enterNumber(entry: Int) {
+    private fun enterNumber(entry: Long) {
         if (_mutableEntryState.value.length >= 12) {
             return
         }
@@ -150,7 +150,7 @@ class CalculatorViewModel : ViewModel() {
 }
 
 sealed class CalculatorEvent{
-    data class Number(val value: Int) : CalculatorEvent()
+    data class Number(val value: Long) : CalculatorEvent()
     data class Calculation(val operation: Operation): CalculatorEvent()
     object Equals : CalculatorEvent()
     object AllClear : CalculatorEvent()
