@@ -118,3 +118,4 @@ class CalculatorViewModel : ViewModel() {
 ## Referências:
 
 - [Artigo Medium: Building an iPhone Calculator Clone on Android with Kotlin and Jetpack Compose](https://www.mobileinsights.dev/building-an-iphone-calculator-clone-on-android-with-kotlin-and-jetpack-compose-87e74bfb1bad)
+- [Utilizando JUnit 5 no Android](https://medium.com/android-dev-br/utilizando-junit-5-no-android-82d752708985)
