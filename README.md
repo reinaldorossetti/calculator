@@ -19,7 +19,7 @@ Este projeto é um clone de calculadora para Android, desenvolvido com Kotlin e 
 ## Pré-requisitos ⚙️
 
 - **Android Studio** (recomendado: versão Hedgehog ou superior)
-- **JDK 17** ou superior
+- **JDK 17**
 - **Gradle** (o wrapper já está incluso no projeto)
 - **Emulador Android** ou dispositivo físico
 - **Conexão à internet** para baixar dependências

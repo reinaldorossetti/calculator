@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -51,7 +52,8 @@ fun InputUIComponent(mutableValueState: State<String>, fontSize: TextUnit) {
         readOnly = true,
         modifier = Modifier
             .fillMaxWidth()
-            .animateContentSize(),
+            .animateContentSize()
+            .testTag(TestTags.DISPLAY),
         colors = TextFieldDefaults.textFieldColors(
             textColor = LightGray,
             containerColor = Black
@@ -86,7 +88,8 @@ fun KeyboardUIComponent(
             onOperatorClick(Operation.AC)
         }
         SpecialOperatorRoundedButton(
-            button = Operation.PLUS_MINUS
+            button = Operation.PLUS_MINUS,
+            onClick = onOperatorClick
         )
         SpecialOperatorRoundedButton(
             button = Operation.PERCENTAGE,
@@ -164,7 +167,8 @@ fun KeyboardUIComponent(
             button = Operation.NONE
         )
         SpecialOperatorRoundedButton(
-            button = Operation.COMMA
+            button = Operation.COMMA,
+            onClick = onOperatorClick
         )
         OperatorRoundedButton(operation = Operation.EQUALS, currentOperation = buttonState, onClick = onOperatorClick)
     }
@@ -176,6 +180,7 @@ fun SpecialOperatorRoundedButton(
     onClick: (Operation) -> Unit = { }
 ) {
     CustomAnimatedButton(
+        modifier = Modifier.testTag(TestTags.special(button)),
         text = button.symbol,
         textColor = Black,
         backgroundColor = LightGray,
@@ -192,6 +197,7 @@ fun OperatorRoundedButton(
 ) {
     val backgroundColor = if (currentOperation == operation) White else Orange
     CustomAnimatedButton(
+        modifier = Modifier.testTag(TestTags.operator(operation)),
         text = operation.symbol,
         textColor = Black,
         backgroundColor = backgroundColor,
@@ -207,6 +213,7 @@ fun NumberRoundedButton(
     onClick: (Int) -> Unit = { }
 ) {
     CustomAnimatedButton(
+        modifier = Modifier.testTag(TestTags.number(text)),
         text = text,
         textColor = White,
         backgroundColor = DarkGray,
@@ -218,6 +225,7 @@ fun NumberRoundedButton(
 
 @Composable
 fun CustomAnimatedButton(
+    modifier: Modifier = Modifier,
     text: String,
     textColor: Color,
     backgroundColor: Color,
@@ -230,7 +238,7 @@ fun CustomAnimatedButton(
     )
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .background(color = backgroundColor, RoundedCornerShape(cornerRadius))
             .size(90.dp)
             .clip(RoundedCornerShape(cornerRadius))
